@@ -2,3 +2,4 @@
 
 coverage==5.3                           # Unit test coverage
 coveralls==2.1.2                        # Coveralls linking (for code coverage reporting)
+invoke==3.0.3                           # Invoke task runner

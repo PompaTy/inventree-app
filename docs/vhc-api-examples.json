@@ -1,0 +1,295 @@
+{
+  "capabilities_staff": {
+    "version": 1,
+    "features": {
+      "boxes": true,
+      "box_scan": true,
+      "bulk_move": true,
+      "structured_item_history": true,
+      "shipment_windows": true
+    },
+    "actions": {
+      "read": true,
+      "create_box": true,
+      "edit_box": true,
+      "move_box": true,
+      "change_box_status": true,
+      "bulk_move": true,
+      "delete_box": true,
+      "manage_shipments": true,
+      "manage_pallets": true,
+      "manage_teams": true,
+      "manage_shipment_windows": true
+    },
+    "stock_fields": [
+      "size",
+      "sterile",
+      "expiry_date",
+      "expiry_label",
+      "vhc_box"
+    ],
+    "stock_ownership": "box",
+    "item_removal": "deletes_linked_stock",
+    "revision_required": [
+      "edit",
+      "move",
+      "status",
+      "bulk_move"
+    ],
+    "bulk_revision_field": "revisions",
+    "sterility_choices": [
+      "",
+      "S",
+      "NS"
+    ],
+    "expiry_labels": {
+      "S": "ER",
+      "NS": "N/A"
+    }
+  },
+  "capabilities_operator": {
+    "version": 1,
+    "features": {
+      "boxes": true,
+      "box_scan": true,
+      "bulk_move": true,
+      "structured_item_history": true,
+      "shipment_windows": true
+    },
+    "actions": {
+      "read": true,
+      "create_box": true,
+      "edit_box": true,
+      "move_box": true,
+      "change_box_status": true,
+      "bulk_move": true,
+      "delete_box": true,
+      "manage_shipments": true,
+      "manage_pallets": true,
+      "manage_teams": false,
+      "manage_shipment_windows": false
+    },
+    "stock_fields": [
+      "size",
+      "sterile",
+      "expiry_date",
+      "expiry_label",
+      "vhc_box"
+    ],
+    "stock_ownership": "box",
+    "item_removal": "deletes_linked_stock",
+    "revision_required": [
+      "edit",
+      "move",
+      "status",
+      "bulk_move"
+    ],
+    "bulk_revision_field": "revisions",
+    "sterility_choices": [
+      "",
+      "S",
+      "NS"
+    ],
+    "expiry_labels": {
+      "S": "ER",
+      "NS": "N/A"
+    }
+  },
+  "created_box": {
+    "pk": 7,
+    "box_number": "260001",
+    "barcode": "260001",
+    "contents": "Bandages (12)",
+    "items": [
+      {
+        "pk": 7,
+        "part": 1,
+        "part_detail": {
+          "pk": 1,
+          "name": "Bandages",
+          "description": "Sterile wound dressings",
+          "IPN": null,
+          "revision": null,
+          "units": ""
+        },
+        "stock_item": 7,
+        "quantity": "12.00000",
+        "size": "Large",
+        "sterile": "S",
+        "expiry_date": "2027-06-30",
+        "expiry_label": "",
+        "created": "2026-09-20 19:23",
+        "updated": "2026-09-20 19:23"
+      }
+    ],
+    "team": 1,
+    "team_detail": {
+      "pk": 1,
+      "name": "General Medicine",
+      "code": "GENERAL_MEDICINE",
+      "color": "#228BE6",
+      "active": true,
+      "display_order": 0
+    },
+    "other_team_description": "",
+    "shipment": null,
+    "shipment_detail": null,
+    "pallet": null,
+    "pallet_detail": null,
+    "current_location": 1,
+    "current_location_detail": {
+      "pk": 1,
+      "name": "VA Warehouse",
+      "pathstring": "VA Warehouse",
+      "external": false
+    },
+    "destination": null,
+    "destination_detail": null,
+    "note": "",
+    "status": "PACKED",
+    "status_text": "Packed",
+    "source": "DONATION_PURCHASE",
+    "source_text": "Donation / purchase",
+    "created": "2026-09-20 19:23",
+    "updated": "2026-09-20 19:23",
+    "created_by": 1,
+    "created_by_name": "testuser",
+    "updated_by": 1,
+    "updated_by_name": "testuser",
+    "revision": 1
+  },
+  "scan_response": [
+    {
+      "pk": 7,
+      "box_number": "260001",
+      "barcode": "260001",
+      "contents": "Bandages (12)",
+      "items": [
+        {
+          "pk": 7,
+          "part": 1,
+          "part_detail": {
+            "pk": 1,
+            "name": "Bandages",
+            "description": "Sterile wound dressings",
+            "IPN": null,
+            "revision": null,
+            "units": ""
+          },
+          "stock_item": 7,
+          "quantity": "12.00000",
+          "size": "Large",
+          "sterile": "S",
+          "expiry_date": "2027-06-30",
+          "expiry_label": "",
+          "created": "2026-09-20 19:23",
+          "updated": "2026-09-20 19:23"
+        }
+      ],
+      "team": 1,
+      "team_detail": {
+        "pk": 1,
+        "name": "General Medicine",
+        "code": "GENERAL_MEDICINE",
+        "color": "#228BE6",
+        "active": true,
+        "display_order": 0
+      },
+      "other_team_description": "",
+      "shipment": null,
+      "shipment_detail": null,
+      "pallet": null,
+      "pallet_detail": null,
+      "current_location": 1,
+      "current_location_detail": {
+        "pk": 1,
+        "name": "VA Warehouse",
+        "pathstring": "VA Warehouse",
+        "external": false
+      },
+      "destination": null,
+      "destination_detail": null,
+      "note": "",
+      "status": "PACKED",
+      "status_text": "Packed",
+      "source": "DONATION_PURCHASE",
+      "source_text": "Donation / purchase",
+      "created": "2026-09-20 19:23",
+      "updated": "2026-09-20 19:23",
+      "created_by": 1,
+      "created_by_name": "testuser",
+      "updated_by": 1,
+      "updated_by_name": "testuser",
+      "revision": 1
+    }
+  ],
+  "edited_box": {
+    "pk": 7,
+    "box_number": "260001",
+    "barcode": "260001",
+    "contents": "Bandages (12)",
+    "items": [
+      {
+        "pk": 7,
+        "part": 1,
+        "part_detail": {
+          "pk": 1,
+          "name": "Bandages",
+          "description": "Sterile wound dressings",
+          "IPN": null,
+          "revision": null,
+          "units": ""
+        },
+        "stock_item": 7,
+        "quantity": "12.00000",
+        "size": "Large",
+        "sterile": "S",
+        "expiry_date": "2027-06-30",
+        "expiry_label": "",
+        "created": "2026-09-20 19:23",
+        "updated": "2026-09-20 19:23"
+      }
+    ],
+    "team": 1,
+    "team_detail": {
+      "pk": 1,
+      "name": "General Medicine",
+      "code": "GENERAL_MEDICINE",
+      "color": "#228BE6",
+      "active": true,
+      "display_order": 0
+    },
+    "other_team_description": "",
+    "shipment": null,
+    "shipment_detail": null,
+    "pallet": null,
+    "pallet_detail": null,
+    "current_location": 1,
+    "current_location_detail": {
+      "pk": 1,
+      "name": "VA Warehouse",
+      "pathstring": "VA Warehouse",
+      "external": false
+    },
+    "destination": null,
+    "destination_detail": null,
+    "note": "Example edit",
+    "status": "PACKED",
+    "status_text": "Packed",
+    "source": "DONATION_PURCHASE",
+    "source_text": "Donation / purchase",
+    "created": "2026-09-20 19:23",
+    "updated": "2026-09-20 19:23",
+    "created_by": 1,
+    "created_by_name": "testuser",
+    "updated_by": 1,
+    "updated_by_name": "testuser",
+    "revision": 2
+  },
+  "stale_edit_error": {
+    "revision": "This box was changed by another user. Reload and try again."
+  },
+  "staff_action_denied": {
+    "detail": "You do not have permission to perform this action."
+  }
+}
