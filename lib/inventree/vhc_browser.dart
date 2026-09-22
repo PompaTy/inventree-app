@@ -95,9 +95,11 @@ class VhcBrowser {
     String path,
     String search, {
     String? shipment,
+    Map<String, String> filters = const {},
   }) async {
     final page = parsePage(
       await _get(path, {
+        ...filters,
         "search": search,
         "limit": "25",
         if (shipment != null) "shipment": shipment,

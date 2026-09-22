@@ -6,6 +6,7 @@ import "package:inventree/inventree/vhc.dart";
 import "package:inventree/inventree/vhc_browser.dart";
 import "package:inventree/l10.dart";
 import "package:inventree/widget/vhc/common.dart";
+import "package:inventree/widget/vhc/box_editor.dart";
 
 class VhcBoxDetail extends StatefulWidget {
   const VhcBoxDetail(
@@ -66,6 +67,18 @@ class _VhcBoxDetailState extends State<VhcBoxDetail> {
     }
   }
 
+  Future<void> _edit() async {
+    final box = _box;
+    if (box == null || !_browser.canRead || !box.canEdit) return;
+    await Navigator.push<VhcBox>(
+      context,
+      MaterialPageRoute<VhcBox>(
+        builder: (context) => VhcBoxEditor(box: box, browser: _browser),
+      ),
+    );
+    if (mounted) await _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     final box = _box;
@@ -80,6 +93,12 @@ class _VhcBoxDetailState extends State<VhcBoxDetail> {
                 : L10().vhcBox,
           ),
           actions: [
+            if (canRead && box != null && box.canEdit)
+              IconButton(
+                tooltip: L10().vhcEditBox,
+                onPressed: _busy ? null : _edit,
+                icon: const Icon(Icons.edit_outlined),
+              ),
             if (canRead)
               IconButton(
                 tooltip: L10().refresh,

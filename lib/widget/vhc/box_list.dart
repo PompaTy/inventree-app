@@ -7,6 +7,7 @@ import "package:inventree/l10.dart";
 import "package:inventree/widget/vhc/box_detail.dart";
 import "package:inventree/widget/vhc/box_filters.dart";
 import "package:inventree/widget/vhc/common.dart";
+import "package:inventree/widget/vhc/box_editor.dart";
 
 class VhcBoxList extends StatefulWidget {
   const VhcBoxList({this.browser, super.key});
@@ -50,6 +51,27 @@ class _VhcBoxListState extends State<VhcBoxList> {
     });
   }
 
+  Future<void> _create() async {
+    final box = await Navigator.push<VhcBox>(
+      context,
+      MaterialPageRoute<VhcBox>(
+        builder: (context) => VhcBoxEditor(browser: _browser),
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _refresh++);
+    if (box != null && _browser.canRead) {
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute<void>(
+          builder: (context) =>
+              VhcBoxDetail(box.pk, boxNumber: box.boxNumber, browser: _browser),
+        ),
+      );
+      if (mounted) setState(() => _refresh++);
+    }
+  }
+
   Future<void> _filters() async {
     final result = await showDialog<VhcFilterSelection>(
       context: context,
@@ -63,6 +85,15 @@ class _VhcBoxListState extends State<VhcBoxList> {
   Widget build(BuildContext context) {
     final filters = {..._selection.values, "search": _query};
     return Scaffold(
+      floatingActionButton:
+          _browser.canRead &&
+              InvenTreeAPI().vhcCapabilities.allows("create_box")
+          ? FloatingActionButton(
+              tooltip: L10().vhcCreateBox,
+              onPressed: _create,
+              child: const Icon(Icons.add),
+            )
+          : null,
       appBar: AppBar(
         title: Text(L10().vhcBoxes),
         actions: [
