@@ -115,6 +115,10 @@ class StockItemScanIntoLocationHandler extends BarcodeScanStockLocationHandler {
 
   @override
   Future<bool> onLocationScanned(int locationId) async {
+    if (item.isBoxed) {
+      showSnackIcon(L10().vhcOwnedStock, success: false);
+      return false;
+    }
     final bool confirm = await InvenTreeSettingsManager().getBool(
       INV_STOCK_CONFIRM_SCAN,
       false,
@@ -175,6 +179,10 @@ class StockLocationScanInItemsHandler extends BarcodeScanStockItemHandler {
   Future<bool> onItemScanned(int itemId) async {
     final InvenTreeStockItem? item =
         await InvenTreeStockItem().get(itemId) as InvenTreeStockItem?;
+    if (item?.isBoxed ?? false) {
+      showSnackIcon(L10().vhcOwnedStock, success: false);
+      return false;
+    }
     final bool confirm = await InvenTreeSettingsManager().getBool(
       INV_STOCK_CONFIRM_SCAN,
       false,

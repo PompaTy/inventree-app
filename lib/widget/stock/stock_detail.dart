@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:inventree/widget/stock/vhc_stock_info.dart";
 import "package:flutter_speed_dial/flutter_speed_dial.dart";
 
 import "package:flutter_tabler_icons/flutter_tabler_icons.dart";
@@ -89,7 +90,17 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
   List<SpeedDialChild> actionButtons(BuildContext context) {
     List<SpeedDialChild> actions = [];
 
-    if (widget.item.canEdit) {
+    if (widget.item.isBoxed) {
+      actions.add(
+        SpeedDialChild(
+          child: Icon(Icons.open_in_new),
+          label: L10().vhcOpenBox,
+          onTap: widget.item.vhcBox!.goToInvenTreePage,
+        ),
+      );
+    }
+
+    if (widget.item.canEdit && !widget.item.isBoxed) {
       // Stock adjustment actions available if item is *not* serialized
       if (!widget.item.isSerialized()) {
         actions.add(
@@ -141,7 +152,7 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
       );
     }
 
-    if (widget.item.canDelete) {
+    if (widget.item.canDelete && !widget.item.isBoxed) {
       actions.add(
         SpeedDialChild(
           child: Icon(TablerIcons.trash, color: Colors.red),
@@ -162,20 +173,22 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
 
     if (widget.item.canEdit) {
       // Scan item into location
-      actions.add(
-        SpeedDialChild(
-          child: Icon(Icons.qr_code_scanner),
-          label: L10().scanIntoLocation,
-          onTap: () {
-            scanBarcode(
-              context,
-              handler: StockItemScanIntoLocationHandler(widget.item),
-            ).then((ctx) {
-              refresh(context);
-            });
-          },
-        ),
-      );
+      if (!widget.item.isBoxed) {
+        actions.add(
+          SpeedDialChild(
+            child: Icon(Icons.qr_code_scanner),
+            label: L10().scanIntoLocation,
+            onTap: () {
+              scanBarcode(
+                context,
+                handler: StockItemScanIntoLocationHandler(widget.item),
+              ).then((ctx) {
+                refresh(context);
+              });
+            },
+          ),
+        );
+      }
 
       actions.add(
         customBarcodeAction(
@@ -338,7 +351,7 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
   }
 
   Future<void> _editStockItem(BuildContext context) async {
-    var fields = InvenTreeStockItem().formFields();
+    var fields = widget.item.formFields();
 
     // Some fields we don't want to edit!
     fields.remove("part");
@@ -525,6 +538,19 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
       return tiles;
     }
 
+    if (api.vhcCapabilities.available) {
+      tiles.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: VhcStockInfo(
+            widget.item,
+            showOwnershipHint: true,
+            showExpiry: false,
+          ),
+        ),
+      );
+    }
+
     // Location information
     if ((widget.item.locationId > 0) && (widget.item.locationName.isNotEmpty)) {
       tiles.add(
@@ -707,15 +733,16 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
       );
     }
 
-    if (expiryEnabled && widget.item.expiryDate != null) {
+    if ((expiryEnabled || api.vhcCapabilities.hasStockField("expiry_label")) &&
+        widget.item.expiryDisplay.isNotEmpty) {
       Widget? _expiryIcon;
 
-      if (widget.item.expired) {
+      if (widget.item.expiryDate != null && widget.item.expired) {
         _expiryIcon = Text(
           L10().expiryExpired,
           style: TextStyle(color: COLOR_DANGER),
         );
-      } else if (widget.item.stale) {
+      } else if (widget.item.expiryDate != null && widget.item.stale) {
         _expiryIcon = Text(
           L10().expiryStale,
           style: TextStyle(color: COLOR_WARNING),
@@ -725,7 +752,7 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
       tiles.add(
         ListTile(
           title: Text(L10().expiryDate),
-          subtitle: Text(widget.item.expiryDateString),
+          subtitle: Text(widget.item.expiryDisplay),
           leading: Icon(TablerIcons.calendar_x),
           trailing: _expiryIcon,
         ),

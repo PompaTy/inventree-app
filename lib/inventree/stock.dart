@@ -2,6 +2,9 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:inventree/api.dart";
+import "package:inventree/api_form.dart";
+import "package:inventree/inventree/vhc.dart";
+import "package:inventree/widget/stock/vhc_stock_form.dart";
 import "package:inventree/helpers.dart";
 import "package:inventree/l10.dart";
 
@@ -190,6 +193,10 @@ class InvenTreeStockItem extends InvenTreeModel {
   String get WEB_URL => "stock/item/";
 
   @override
+  APIFormWidgetState? get formHandler =>
+      api.vhcCapabilities.hasStockField("sterile") ? VhcStockFormState() : null;
+
+  @override
   Map<String, Map<String, dynamic>> formFields() {
     Map<String, Map<String, dynamic>> fields = {
       "part": {},
@@ -204,6 +211,32 @@ class InvenTreeStockItem extends InvenTreeModel {
       "packaging": {},
       "link": {},
     };
+
+    final customFields = <String, Map<String, dynamic>>{
+      "size": {"label": L10().stockSize},
+      "sterile": {"label": L10().stockSterility, "reactive": true},
+      "expiry_date": {"label": L10().expiryDate, "reactive": true},
+      "expiry_label": {
+        "label": L10().vhcExpiryLabel,
+        "type": "choice",
+        "reactive": true,
+      },
+    };
+    for (final entry in customFields.entries) {
+      if (api.vhcCapabilities.hasStockField(entry.key)) {
+        fields[entry.key] = entry.value;
+      }
+    }
+    if (isBoxed) {
+      for (final field in [
+        "part",
+        "quantity",
+        "location",
+        ...customFields.keys,
+      ]) {
+        fields.remove(field);
+      }
+    }
 
     return fields;
   }
@@ -259,6 +292,20 @@ class InvenTreeStockItem extends InvenTreeModel {
   bool get isInStock => getBool("in_stock", backup: true);
 
   String get packaging => getString("packaging");
+
+  String get size => getString("size");
+  String get sterile => getString("sterile");
+  String get expiryLabel => getString("expiry_label");
+  String get expiryDisplay =>
+      vhcCalendarDate(getValue("expiry_date")) ?? expiryLabel;
+  VhcBox? get vhcBox {
+    final value = getValue("vhc_box");
+    if (value is! Map<String, dynamic>) return null;
+    final box = VhcBox.fromJson(value);
+    return box.pk > 0 ? box : null;
+  }
+
+  bool get isBoxed => vhcBox != null;
 
   String get batch => getString("batch");
 
@@ -510,6 +557,8 @@ class InvenTreeStockItem extends InvenTreeModel {
     int? location,
   }) async {
     // Serialized stock cannot be adjusted (unless it is a "transfer")
+    if (isBoxed) return false;
+
     if (isSerialized() && location == null) {
       return false;
     }

@@ -22,6 +22,7 @@ import "package:inventree/preferences.dart";
 import "package:inventree/l10.dart";
 import "package:inventree/helpers.dart";
 import "package:inventree/inventree/model.dart";
+import "package:inventree/inventree/vhc_capabilities.dart";
 import "package:inventree/inventree/notification.dart";
 import "package:inventree/inventree/status_codes.dart";
 import "package:inventree/inventree/sentry.dart";
@@ -236,7 +237,58 @@ class InvenTreeAPI {
 
   String makeUrl(String endpoint) => _makeUrl(endpoint);
 
-  UserProfile? profile;
+  UserProfile? _profile;
+  UserProfile? get profile => _profile;
+  set profile(UserProfile? value) {
+    _profile = value;
+    _vhcGeneration++;
+    _vhcCapabilities = const VhcCapabilities();
+    _vhcProfile = null;
+    _vhcServer = null;
+    _vhcToken = null;
+  }
+
+  VhcCapabilities _vhcCapabilities = const VhcCapabilities();
+  UserProfile? _vhcProfile;
+  String? _vhcServer;
+  String? _vhcToken;
+  int _vhcGeneration = 0;
+
+  VhcCapabilities get vhcCapabilities =>
+      identical(profile, _vhcProfile) &&
+          profile?.server == _vhcServer &&
+          profile?.token == _vhcToken
+      ? _vhcCapabilities
+      : const VhcCapabilities();
+
+  /// Optional extensions must never prevent connecting to a standard server.
+  /// The loader also permits deterministic tests of account changes in flight.
+  Future<VhcCapabilities> refreshVhcCapabilities({
+    Future<APIResponse> Function()? loader,
+  }) async {
+    final generation = ++_vhcGeneration;
+    final currentProfile = profile;
+    final server = profile?.server;
+    final token = profile?.token;
+    VhcCapabilities result;
+    try {
+      final response =
+          await (loader?.call() ?? get("vhc/capabilities/", optional: true));
+      result = VhcCapabilities.fromResponse(response.statusCode, response.data);
+    } catch (_) {
+      result = const VhcCapabilities(availability: VhcAvailability.unavailable);
+    }
+    if (generation == _vhcGeneration &&
+        identical(profile, currentProfile) &&
+        profile?.server == server &&
+        profile?.token == token) {
+      _vhcProfile = currentProfile;
+      _vhcServer = server;
+      _vhcToken = token;
+      _vhcCapabilities = result;
+    }
+    return result;
+  }
 
   // Available user roles are loaded when connecting to the server
   Map<String, dynamic> roles = {};
@@ -453,6 +505,8 @@ class InvenTreeAPI {
       return false;
     }
 
+    await refreshVhcCapabilities();
+
     // Finally, connected
     return true;
   }
@@ -663,6 +717,8 @@ class InvenTreeAPI {
     _userSettings.clear();
 
     roles.clear();
+    permissions.clear();
+    userInfo.clear();
     _plugins.clear();
     serverInfo.clear();
     _connectionStatusChanged();
@@ -1327,6 +1383,7 @@ class InvenTreeAPI {
     String? data,
     int? statusCode,
     bool ignoreResponse = false,
+    bool optional = false,
   }) async {
     if (data != null && data.isNotEmpty) {
       var encoded_data = utf8.encode(data);
@@ -1351,6 +1408,19 @@ class InvenTreeAPI {
       );
 
       response.statusCode = _response.statusCode;
+
+      if (optional) {
+        final body = await _response.transform(utf8.decoder).join();
+        if (response.statusCode == 200) {
+          try {
+            response.data = jsonDecode(body);
+          } on FormatException {
+            response.data = null;
+            response.error = "Invalid capability response";
+          }
+        }
+        return response;
+      }
 
       // If the server returns a server error code, alert the user
       if (_response.statusCode >= 500) {
@@ -1469,6 +1539,7 @@ class InvenTreeAPI {
     Map<String, String> params = const {},
     Map<String, String> headers = const {},
     int? expectedStatusCode = 200,
+    bool optional = false,
   }) async {
     HttpClientRequest? request = await apiRequest(
       url,
@@ -1486,7 +1557,7 @@ class InvenTreeAPI {
       );
     }
 
-    return completeRequest(request);
+    return completeRequest(request, optional: optional);
   }
 
   /*

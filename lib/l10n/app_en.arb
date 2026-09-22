@@ -1927,5 +1927,12 @@
   "@currency": {},
 
   "priceBreaks": "Price Breaks",
-  "@priceBreaks": {}
+  "@priceBreaks": {},
+  "vhcBox": "Box",
+  "vhcTeam": "Team",
+  "stockSize": "Size",
+  "stockSterility": "Sterility",
+  "vhcExpiryLabel": "Expiration label",
+  "vhcOpenBox": "Open box",
+  "vhcOwnedStock": "Edit contents and location from the box"
 }

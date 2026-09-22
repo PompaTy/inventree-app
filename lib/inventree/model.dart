@@ -271,6 +271,8 @@ class InvenTreeModel {
     return {};
   }
 
+  APIFormWidgetState? get formHandler => null;
+
   Future<void> createForm(
     BuildContext context,
     String title, {
@@ -292,6 +294,7 @@ class InvenTreeModel {
       onSuccess: onSuccess,
       method: "POST",
       fileField: fileField,
+      formHandler: formHandler,
     );
   }
 
@@ -316,6 +319,7 @@ class InvenTreeModel {
       modelData: jsondata,
       onSuccess: onSuccess,
       method: "PATCH",
+      formHandler: formHandler,
     );
   }
 

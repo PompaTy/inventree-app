@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:inventree/inventree/model.dart";
 import "package:inventree/inventree/stock.dart";
+import "package:inventree/widget/stock/vhc_stock_info.dart";
 import "package:inventree/widget/link_icon.dart";
 import "package:inventree/widget/paginator.dart";
 import "package:inventree/widget/refreshable_state.dart";
@@ -64,6 +65,10 @@ class _PaginatedStockItemListState
 
     if (!InvenTreeAPI().supportsStockItemCreationDate) {
       options.remove("creation_date");
+    }
+
+    if (InvenTreeAPI().vhcCapabilities.hasStockField("vhc_box")) {
+      options.addAll({"box": L10().vhcBox, "team": L10().vhcTeam});
     }
 
     return options;
@@ -143,7 +148,10 @@ class _PaginatedStockItemListState
 
     return ListTile(
       title: Text("${item.partName}"),
-      subtitle: Text(item.locationPathString),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [Text(item.locationPathString), VhcStockInfo(item)],
+      ),
       leading: InvenTreeAPI().getThumbnail(item.partThumbnail),
       trailing: LargeText(
         item.displayQuantity,

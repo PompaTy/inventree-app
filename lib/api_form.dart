@@ -142,7 +142,9 @@ class APIFormField {
   bool get multiline => (getParameter("multiline") ?? false) as bool;
 
   // Get the "value" as a string (look for "default" if not available)
-  dynamic get value => data["value"] ?? data["instance_value"] ?? defaultValue;
+  dynamic get value => data.containsKey("value")
+      ? data["value"]
+      : data["instance_value"] ?? defaultValue;
 
   // Render value to string (for form submission)
   String renderValueToString() {
@@ -368,6 +370,7 @@ class APIFormField {
         helperText: helpText,
       ),
       child: DateTimeField(
+        key: data["reactive"] == true ? ValueKey("$name:$value") : null,
         format: DateFormat("yyyy-MM-dd"),
         initialValue: currentDate,
         onChanged: (DateTime? time) {
@@ -451,7 +454,9 @@ class APIFormField {
           hintText: helpText,
         ),
       ),
-      onChanged: null,
+      onChanged: data["reactive"] == true
+          ? (dynamic item) => setFieldValue(item?["value"])
+          : null,
       clearButtonProps: ClearButtonProps(isVisible: !required),
       itemAsString: (dynamic item) {
         return (item["display_name"] ?? "") as String;
@@ -1495,7 +1500,7 @@ class APIFormWidgetState extends State<APIFormWidget> {
 
       if (field.isSimple) {
         // Simple top-level field data
-        data[field.name] = field.data["value"] ?? field.defaultValue;
+        data[field.name] = field.value;
       } else {
         // Not so simple... (WHY DID I MAKE THE API SO COMPLEX?)
         if (field.parent.isNotEmpty) {
