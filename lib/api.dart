@@ -185,6 +185,8 @@ class InvenTreeAPI {
   // Register a callback function to be notified when the connection status changes
   void registerCallback(Function() func) => _statusCallbacks.add(func);
 
+  void unregisterCallback(Function() func) => _statusCallbacks.remove(func);
+
   void _connectionStatusChanged() {
     for (Function() func in _statusCallbacks) {
       // Call the function

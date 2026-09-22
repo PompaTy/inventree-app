@@ -35,8 +35,8 @@ class VhcStockInfo extends StatelessWidget {
       children: [
         if (box != null)
           TextButton.icon(
-            onPressed: box.goToInvenTreePage,
-            icon: const Icon(Icons.open_in_new, size: 16),
+            onPressed: () => box.goToDetailPage(context),
+            icon: const Icon(Icons.inventory_2_outlined, size: 16),
             label: Text(
               [
                 "${L10().vhcBox}: ${box.boxNumber}",

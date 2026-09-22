@@ -1,4 +1,6 @@
 import "package:inventree/inventree/model.dart";
+import "package:flutter/material.dart";
+import "package:inventree/widget/vhc/box_detail.dart";
 
 /// Keep calendar dates independent of local or UTC timezone conversion.
 String? vhcCalendarDate(dynamic value) {
@@ -188,6 +190,13 @@ class VhcBox extends VhcModel {
   String get URL => "vhc/box/";
   @override
   String get webUrl => api.makeUrl("/web/boxes/$pk/");
+  @override
+  Future<Object?> goToDetailPage(BuildContext context) => Navigator.push(
+    context,
+    MaterialPageRoute<Object>(
+      builder: (context) => VhcBoxDetail(pk, boxNumber: boxNumber),
+    ),
+  );
   @override
   VhcBox createFromJson(Map<String, dynamic> json) => VhcBox.fromJson(json);
   String get boxNumber => getString("box_number");

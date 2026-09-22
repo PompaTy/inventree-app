@@ -93,9 +93,9 @@ class _StockItemDisplayState extends RefreshableState<StockDetailWidget> {
     if (widget.item.isBoxed) {
       actions.add(
         SpeedDialChild(
-          child: Icon(Icons.open_in_new),
+          child: Icon(Icons.inventory_2_outlined),
           label: L10().vhcOpenBox,
-          onTap: widget.item.vhcBox!.goToInvenTreePage,
+          onTap: () => widget.item.vhcBox!.goToDetailPage(context),
         ),
       );
     }

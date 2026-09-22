@@ -339,7 +339,7 @@ void main() {
       expect(find.textContaining("000007"), findsOneWidget);
       expect(find.textContaining("Surgery"), findsOneWidget);
       expect(find.textContaining("ER"), findsOneWidget);
-      expect(find.byIcon(Icons.open_in_new), findsOneWidget);
+      expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
       await capabilities(404);
       await tester.pumpWidget(
         MaterialApp(home: Scaffold(body: VhcStockInfo(item))),

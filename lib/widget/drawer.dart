@@ -10,6 +10,8 @@ import "package:inventree/inventree/part.dart";
 import "package:inventree/inventree/purchase_order.dart";
 import "package:inventree/inventree/sales_order.dart";
 import "package:inventree/inventree/stock.dart";
+import "package:inventree/inventree/vhc_browser.dart";
+import "package:inventree/widget/vhc/box_list.dart";
 import "package:inventree/l10.dart";
 import "package:inventree/settings/about.dart";
 import "package:inventree/settings/settings.dart";
@@ -247,6 +249,26 @@ class _InvenTreeDrawerState extends State<InvenTreeDrawer> {
           title: Text(L10().stock),
           leading: Icon(TablerIcons.package, color: COLOR_ACTION),
           onTap: _stock,
+        ),
+      );
+    }
+
+    if (VhcBrowser().canRead) {
+      tiles.add(
+        ListTile(
+          title: Text(L10().vhcBoxes),
+          leading: Icon(Icons.inventory_2_outlined, color: COLOR_ACTION),
+          onTap: () {
+            _closeDrawer();
+            if (_checkConnection()) {
+              Navigator.push(
+                widget.parentContext,
+                MaterialPageRoute<void>(
+                  builder: (context) => const VhcBoxList(),
+                ),
+              );
+            }
+          },
         ),
       );
     }
